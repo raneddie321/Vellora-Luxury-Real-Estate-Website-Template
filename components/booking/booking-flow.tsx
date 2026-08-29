@@ -80,19 +80,23 @@ export function BookingFlow({ initialSlug }: { initialSlug?: string }) {
   }
 
   function next() {
-    if (step === 3) {
-      const found = validate(details, {
-        name: [required("Your name")],
-        email: [emailRule],
-        phone: [phoneRule],
-      });
-      setErrors(found);
-      if (Object.keys(found).length) return;
-    }
     if (step < 4) go(step + 1);
   }
 
   async function submit() {
+    // The details step ends in "Confirm booking" rather than "Continue", so
+    // this is the only gate the contact details ever pass through.
+    const found = validate(details, {
+      name: [required("Your name")],
+      email: [emailRule],
+      phone: [phoneRule],
+    });
+    setErrors(found);
+    if (Object.keys(found).length) {
+      const firstKey = Object.keys(found)[0];
+      document.getElementById(`booking-${firstKey}`)?.focus();
+      return;
+    }
     setSubmitting(true);
     await submitDemo({ slug, date, time, details });
     setReference(`VW-${String(Math.abs(seededIndex(`${slug}${date}${time}`, 9000) + 1000))}`);
@@ -110,7 +114,7 @@ export function BookingFlow({ initialSlug }: { initialSlug?: string }) {
   return (
     <div className="grid gap-12 lg:grid-cols-12 lg:gap-14">
       {/* --- Step rail ------------------------------------------------- */}
-      <div className="lg:col-span-4">
+      <div className="min-w-0 lg:col-span-4">
         <ol className="lg:sticky lg:top-28">
           {bookingContent.steps.map((item, i) => {
             const state = i === step ? "current" : i < step ? "done" : "todo";
@@ -136,7 +140,7 @@ export function BookingFlow({ initialSlug }: { initialSlug?: string }) {
                 >
                   {state === "done" ? <Check className="size-3.5" /> : ordinal(i)}
                 </span>
-                <div className="pt-0.5">
+                <div className="min-w-0 pt-0.5">
                   <p
                     className={cn(
                       "text-base transition-colors duration-500",
@@ -154,13 +158,13 @@ export function BookingFlow({ initialSlug }: { initialSlug?: string }) {
       </div>
 
       {/* --- Step panel ------------------------------------------------ */}
-      <div className="lg:col-span-7 lg:col-start-6">
+      <div className="min-w-0 lg:col-span-7 lg:col-start-6">
         <div className="border border-hairline bg-surface-raised p-6 sm:p-9">
           <div className="flex items-center justify-between gap-4 border-b border-hairline pb-5">
             <h2
               ref={headingRef}
               tabIndex={-1}
-              className="font-serif text-2xl tracking-[-0.025em] text-content outline-none sm:text-3xl"
+              className="min-w-0 font-serif text-2xl tracking-[-0.025em] text-content outline-none sm:text-3xl"
             >
               {bookingContent.steps[step]?.title}
             </h2>

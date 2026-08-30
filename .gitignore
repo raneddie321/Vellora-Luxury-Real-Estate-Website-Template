@@ -1,0 +1,12 @@
+# Dependencies and build output for the RANEDDIE-STUDIO app
+RANEDDIE-STUDIO/node_modules/
+RANEDDIE-STUDIO/.next/
+RANEDDIE-STUDIO/.smoke/
+RANEDDIE-STUDIO/out/
+RANEDDIE-STUDIO/*.tsbuildinfo
+
+# Never commit real credentials
+RANEDDIE-STUDIO/.env
+RANEDDIE-STUDIO/.env*.local
+
+.DS_Store
